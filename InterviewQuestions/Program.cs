@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Data.SqlClient;
+using System.Text;
 using InterviewQuestions.DAL;
 using InterviewQuestions.Model;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace InterviewQuestions
@@ -85,7 +86,8 @@ namespace InterviewQuestions
             Console.WriteLine(" 3) Is Binary Tree a Binary Search Tree");
             Console.WriteLine(" 4) Check a string to see if it has all Unique Charcters");
             Console.WriteLine(" 5) Reverse the order of a string");
-
+            Console.WriteLine(" 6) Find smallest positive value NOT in an integer array");
+            Console.WriteLine(" 7) Translate a string to Goat Latin");
             Console.WriteLine(" X) Exit the Code Menu");
             Console.Write("Enter selection: ");
             codeAnswer = Console.ReadLine();                
@@ -167,7 +169,17 @@ namespace InterviewQuestions
                         Console.WriteLine($"Reversed Text of \"{test}\" is \"{ReverseString(test)}\" ");
                     }
                     break;
-                case "6":
+                case "6": //Find minimum positive value not in Array: FindMinPositiveValueNotInArray
+                    int[] allPositive = new int []{1, 3, 6, 4, 1, 2};
+                    int[] allNegitive = new int[]{-1,-2};
+                    Console.WriteLine($"For All Positive Case [1, 3, 6, 4, 1, 2] the mininmum value not in Array is: {FindMinPositiveValueNotInArray(allPositive)}");
+                    Console.WriteLine($"For All Negative Case [-1,-2] the mininmum value not in Array is: {FindMinPositiveValueNotInArray(allNegitive)}");
+                    break;
+                case "7":
+                    Console.Write("Enter the Phrase to Translate to Goat Latin: ");
+                    var strGL = Console.ReadLine();
+                    Console.WriteLine($"\nThe phrase to translate is: {strGL}");
+                    Console.WriteLine($"The Goat Latin Translation is: >{GoatLatinGenerator(strGL)}<");
                     break;
 
                 case "x":
@@ -384,6 +396,42 @@ namespace InterviewQuestions
             Array.Reverse(myArr);
             return new string(myArr);
         }
+
+        public int FindMinPositiveValueNotInArray(int[] A){
+            if(A.Length == 0)
+                return 1;
+            
+            var maxValInA = A.Max();
+            if(maxValInA <=0)
+                return 1;
+            
+            var sortedA = from val in A orderby val select val;
+
+            for(var i = 1; i < maxValInA; i++){
+                if(!sortedA.Contains(i))
+                    return i;
+            }
+            return 1;
+        }
+
+        public static string GoatLatinGenerator(string input){
+            var hashSet = new HashSet<char>("aeiouAEIOU".ToCharArray());
+            StringBuilder sb = new StringBuilder();
+            var strAry = input.Split();
+            foreach(var word in strAry){
+                if(string.IsNullOrEmpty(word))
+                {
+                    sb.Append(" ");
+                    continue;
+                }
+                var firstChar = word.Substring(0,1).ToCharArray();
+                if (hashSet.Contains(firstChar[0]))
+                    sb.Append($"ma{word} ");
+                else //what if we need a puctuation test example word is test, or test! or even test!!
+                    sb.Append($"{word}ma ");
+            }
+            return sb.ToString();
+        }        
 #endregion
         private void EndOfAnswer(){
             Console.WriteLine("");
